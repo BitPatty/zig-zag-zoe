@@ -85,6 +85,7 @@ pub fn withSDLWindow(config: *const SDLWindowConfiguration, func: fn (*Rendering
     var current_scale: f32 = 1.0;
     var current_width: c_int = undefined;
     var current_height: c_int = undefined;
+    var last_render: u64 = 0;
 
     // Render Loop
     while (running) {
@@ -108,6 +109,12 @@ pub fn withSDLWindow(config: *const SDLWindowConfiguration, func: fn (*Rendering
                 else => {},
             }
         }
+
+        const now = c.SDL_GetTicks();
+
+        // Re-render at least once every 100ms
+        if (now - last_render > 100)
+            sdl_ctx.invalidated = true;
 
         try sdlTry(c.SDL_GetWindowSize(window, &current_width, &current_height));
 
@@ -137,6 +144,7 @@ pub fn withSDLWindow(config: *const SDLWindowConfiguration, func: fn (*Rendering
         try sdlTry(c.SDL_RenderPresent(renderer));
 
         // ~ 60fps
+        last_render = now;
         c.SDL_Delay(16);
     }
 }
