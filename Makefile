@@ -15,11 +15,11 @@ ZIG_BINARY_NAME := zig-zag-zoe
 FLATPAK_CONFIG_PATH := $(PWD)/zig-zag-zoe.flatpak.yml
 FLATPAK_BUILD_DIR := $(PWD)/.out/flatpak
 
-all: sdl flatpak app clean 
+all: sdl app clean 
 
 .PHONY: flatpak
 flatpak: $(FLATPAK_BUILD_DIR)
-$(FLATPAK_BUILD_DIR): ${ZIG_BUILD_DIR} ${FLATPAK_CONFIG_PATH} app
+$(FLATPAK_BUILD_DIR): $(ZIG_BUILD_DIR)/$(ZIG_BINARY_NAME)
 	rm -rf $(FLATPAK_BUILD_DIR)
 	flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 	flatpak-builder --user --install-deps-from=flathub --force-clean ${FLATPAK_BUILD_DIR} ${FLATPAK_CONFIG_PATH}
