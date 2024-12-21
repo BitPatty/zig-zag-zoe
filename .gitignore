@@ -1,6 +1,8 @@
 # Build output
-.zig-cache
-zig-out/
+.zig-cache/
+.sdl3/
+.out/
+.flatpak-builder/
 
 # IDE
 .vscode

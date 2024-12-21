@@ -1,5 +1,4 @@
 const math = @import("std").math;
-const debug = @import("std").debug;
 const c = @cImport({
     @cInclude("SDL3/SDL.h");
 });
@@ -53,6 +52,7 @@ pub const InputHandlers = struct {
 };
 
 pub fn withSDLWindow(config: *const SDLWindowConfiguration, func: fn (*RenderingContext) anyerror!void, inputHandlers: *const InputHandlers) !void {
+    listVideoDrivers();
     if (!c.SDL_Init(c.SDL_INIT_VIDEO)) return printSDLErrorAndFail(error.SDLInitFailed);
     defer c.SDL_Quit();
 
@@ -73,7 +73,7 @@ pub fn withSDLWindow(config: *const SDLWindowConfiguration, func: fn (*Rendering
     try sdlTry(c.SDL_SetWindowAspectRatio(window, config.aspect_ratio, config.aspect_ratio));
 
     // Create / Configure the renderer
-    const renderer = c.SDL_CreateRenderer(window, "vulkan");
+    const renderer = c.SDL_CreateRenderer(window, null);
     if (renderer == null) return printSDLErrorAndFail(error.RendererCreationFailed);
     defer c.SDL_DestroyRenderer(renderer);
 
@@ -199,13 +199,21 @@ pub fn drawCircle(sdl_ctx: *RenderingContext, center: PointF, radius: f32, thick
     }
 }
 
+fn listVideoDrivers() void {
+    c.SDL_Log("Available video drivers:");
+    var i: c_int = c.SDL_GetNumVideoDrivers();
+    while (i > 0) : (i -= 1) {
+        c.SDL_Log("%s", c.SDL_GetVideoDriver(@as(c_int, i)));
+    }
+}
+
 fn sdlTry(result: bool) !void {
     if (result) return;
     return printSDLErrorAndFail(error.SDLError);
 }
 
 fn printSDLError() void {
-    debug.print("SDL failure: {s}", .{c.SDL_GetError()});
+    c.SDL_Log("SDL error: %s", c.SDL_GetError());
 }
 
 fn printSDLErrorAndFail(err: anyerror) !void {
