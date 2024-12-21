@@ -19,7 +19,7 @@ all: sdl app clean
 
 .PHONY: flatpak
 flatpak: $(FLATPAK_BUILD_DIR)
-$(FLATPAK_BUILD_DIR): $(ZIG_BUILD_DIR)/$(ZIG_BINARY_NAME)
+$(FLATPAK_BUILD_DIR):
 	rm -rf $(FLATPAK_BUILD_DIR)
 	flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 	flatpak-builder --user --install-deps-from=flathub --force-clean ${FLATPAK_BUILD_DIR} ${FLATPAK_CONFIG_PATH}
