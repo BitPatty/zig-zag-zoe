@@ -3,7 +3,7 @@ name: Build and Upload Artifact
 on:
   push:
     branches:
-      - */*
+      - "*/*"
   pull_request:
 
 jobs:
