@@ -55,7 +55,7 @@ $(SDL_BUILD_DIR): $(SDL_SRC_DIR)
 	mkdir -p $(SDL_INCLUDE_DIR)
 	mkdir -p $(SDL_LIB64_DIR)
 	mkdir -p $(SDL_LIB_DIR)
-	git submodule update
+	git submodule update --init
 	cd $(SDL_SRC_DIR) && \
 	rm -rf build && \
 	cmake -S . -B build \
