@@ -4,6 +4,9 @@ runtime: org.freedesktop.Platform
 runtime-version: '24.08'
 sdk: org.freedesktop.Sdk
 command: /app/bin/zig-zag-zoe
+metadata:
+  name: "MyApp"
+  author: "Your Name or Organization"
 modules:
   - name: zig-zag-zoe
     buildsystem: simple
