@@ -27,7 +27,7 @@ flatpak: $(FLATPAK_BUILD_DIR)
 $(FLATPAK_BUILD_DIR):
 	rm -rf $(FLATPAK_BUILD_DIR)
 	flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-	flatpak-builder --build-args="--share=network" --user --install-deps-from=flathub --repo=$(FLATPAK_REPO_DIR) --force-clean ${FLATPAK_BUILD_DIR} ${FLATPAK_CONFIG_PATH}
+	flatpak-builder --user --install-deps-from=flathub --repo=$(FLATPAK_REPO_DIR) --force-clean ${FLATPAK_BUILD_DIR} ${FLATPAK_CONFIG_PATH}
 	flatpak build-bundle $(FLATPAK_REPO_DIR) $(BUILD_BASE_DIR)/ZigZagZoe.flatpak $(FLATPAK_APP_ID) --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo
 
 .PHONY: app

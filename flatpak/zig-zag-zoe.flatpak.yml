@@ -36,6 +36,9 @@ modules:
         dest: zig-archive
       - type: dir
         path: ..
+build-options:
+  build-args:
+    - --share=network
 finish-args:
   - "--socket=x11"
   - "--share=ipc"
