@@ -1,32 +1,38 @@
+BUILD_BASE_DIR := .out
+
 # SDL
 SDL_SRC_DIR := $(PWD)/submodules/SDL
-SDL_BUILD_DIR := $(PWD)/.out/sdl
+SDL_BUILD_DIR := $(PWD)/$(BUILD_BASE_DIR)/sdl
 SDL_INCLUDE_DIR := $(SDL_BUILD_DIR)/include
 SDL_LIB_DIR := $(SDL_BUILD_DIR)/lib
+SDL_LIB64_DIR := $(SDL_BUILD_DIR)/lib64
 
 # Zig
 ZIG := zig
 ZIG_SRC := $(wildcard src/**/*.zig)
 ZIG_CACHE_DIR := $(PWD)/.zig-cache
-ZIG_BUILD_DIR := $(PWD)/.out/app
+ZIG_BUILD_DIR := $(PWD)/$(BUILD_BASE_DIR)/app
 ZIG_BINARY_NAME := zig-zag-zoe
 
 # Flatpak
-FLATPAK_CONFIG_PATH := $(PWD)/zig-zag-zoe.flatpak.yml
-FLATPAK_BUILD_DIR := $(PWD)/.out/flatpak
+FLATPAK_CONFIG_PATH := $(PWD)/flatpak/zig-zag-zoe.flatpak.yml
+FLATPAK_BUILD_DIR := $(PWD)/$(BUILD_BASE_DIR)/flatpak-build
+FLATPAK_REPO_DIR := $(PWD)/$(BUILD_BASE_DIR)/flatpak-repo
+FLATPAK_APP_ID := dev.collet.ZigZagZoe
 
-all: sdl app clean 
+all: sdl app 
 
 .PHONY: flatpak
 flatpak: $(FLATPAK_BUILD_DIR)
 $(FLATPAK_BUILD_DIR):
 	rm -rf $(FLATPAK_BUILD_DIR)
 	flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-	flatpak-builder --user --install-deps-from=flathub --force-clean ${FLATPAK_BUILD_DIR} ${FLATPAK_CONFIG_PATH}
+	flatpak-builder --user --install-deps-from=flathub --repo=$(FLATPAK_REPO_DIR) --force-clean ${FLATPAK_BUILD_DIR} ${FLATPAK_CONFIG_PATH}
+	flatpak build-bundle $(FLATPAK_REPO_DIR) $(BUILD_BASE_DIR)/ZigZagZoe.flatpak $(FLATPAK_APP_ID) --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo
 
 .PHONY: app
-app: $(ZIG_BUILD_DIR)/$(ZIG_BINARY_NAME) sdl
-$(ZIG_BUILD_DIR)/$(ZIG_BINARY_NAME): $(ZIG_SRC)
+app: $(ZIG_BUILD_DIR)/$(ZIG_BINARY_NAME)
+$(ZIG_BUILD_DIR)/$(ZIG_BINARY_NAME): $(ZIG_SRC) $(SDL_BUILD_DIR)
 	rm -rf $(ZIG_CACHE_DIR)
 	rm -rf $(ZIG_BUILD_DIR)
 	mkdir -p $(ZIG_BUILD_DIR)
@@ -36,6 +42,7 @@ $(ZIG_BUILD_DIR)/$(ZIG_BINARY_NAME): $(ZIG_SRC)
 	  -femit-bin="$@" \
 	  -I$(SDL_INCLUDE_DIR) \
 	  -L$(SDL_LIB_DIR) \
+	  -L$(SDL_LIB64_DIR) \
 	  -weak-lSDL3 \
 	  -lc \
 	  src/main.zig
@@ -44,6 +51,10 @@ $(ZIG_BUILD_DIR)/$(ZIG_BINARY_NAME): $(ZIG_SRC)
 sdl: $(SDL_BUILD_DIR)
 $(SDL_BUILD_DIR): $(SDL_SRC_DIR)
 	rm -rf $(SDL_BUILD_DIR)
+	mkdir -p $(SDL_BUILD_DIR)
+	mkdir -p $(SDL_INCLUDE_DIR)
+	mkdir -p $(SDL_LIB64_DIR)
+	mkdir -p $(SDL_LIB_DIR)
 	git submodule update
 	cd $(SDL_SRC_DIR) && \
 	rm -rf build && \

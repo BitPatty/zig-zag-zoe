@@ -33,13 +33,15 @@ const Player = enum {
     O,
 };
 
+// The player that has the current turn
+var CurrentPlayer: Player = Player.X;
+
+// Cell States
 const CellState = enum {
     PLAYER_X,
     PLAYER_O,
     EMPTY,
 };
-
-var CurrentPlayer: Player = Player.X;
 
 var CellStates = [9]CellState{
     CellState.EMPTY,
