@@ -24,14 +24,8 @@ jobs:
                libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
                libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev fcitx-libs-dev \
                libpipewire-0.3-dev libwayland-dev libdecor-0-dev liburing-dev
-      - name: Run make
-        run: make
-      - name: Upload binary
-        uses: actions/upload-artifact@v3
-        with:
-          name: build-artifact
-          path: .out/app/zig-zag-zoe
-          retention-days: 1
+      - name: Run make flatpak
+        run: make flatpak
       - name: Upload flatpak
         uses: actions/upload-artifact@v3
         with:
