@@ -1,4 +1,4 @@
-# Tic Tac Toe
+# Zig Zag Zoe
 
 Inspired by [tsoding](https://www.youtube.com/watch?v=gCVMkKgs3uQ), this repository contains an implementation of Tic Tac Toe using [Zig](https://ziglang.org/) and [SDL3](https://wiki.libsdl.org/SDL3/FrontPage).
 
