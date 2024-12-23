@@ -65,7 +65,7 @@ const BLUE: *const SDL.ColorRGBA = &.{ .r = 0, .g = 0, .b = 255, .a = 255 };
 
 /// Main Entrypoint
 pub fn main() !void {
-    const window_cfg: SDL.SDLWindowConfiguration = .{ .title = "Tic Tac Toe", .background = DARK_GRAY, .aspect_ratio = 1.0, .initial_width = 600 };
+    const window_cfg: SDL.SDLWindowConfiguration = .{ .title = "Zig Zag Zoe", .background = DARK_GRAY, .aspect_ratio = 1.0, .initial_width = 600 };
     const event_handlers: SDL.InputHandlers = .{ .click_event = processClick };
     try SDL.withSDLWindow(&window_cfg, renderGame, &event_handlers);
 }
