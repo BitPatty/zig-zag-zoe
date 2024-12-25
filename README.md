@@ -10,7 +10,7 @@ Inspired by [tsoding](https://www.youtube.com/watch?v=gCVMkKgs3uQ), this reposit
 
 > Note that the build is configured for x86_64 only
 
-The project was implemented using zig 0.13.0 and libSDL3.so.0.1.7. The SDL wrapper is configured to use `vulkan` for rendering, it can be adjusted if necessary (see `src/sdl.zig`). As the time of this writing SDL3 has not been released yet and oftentimes must be built ["The Unix Way"](https://wiki.libsdl.org/SDL3/Installation). The repository includes an SDL submodule that will be built together with the binary.
+The project was implemented using zig 0.13.0 and libSDL3.so.0.1.7. As the time of this writing SDL3 has not been released yet and oftentimes must be built ["The Unix Way"](https://wiki.libsdl.org/SDL3/Installation). The repository includes an SDL submodule that will be built together with the binary.
 
 To build the project run the following command:
 

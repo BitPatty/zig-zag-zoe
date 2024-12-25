@@ -190,23 +190,61 @@ pub fn drawLine(sdl_ctx: *RenderingContext, start: PointF, end: PointF, thicknes
 /// Draws a cricle
 pub fn drawCircle(sdl_ctx: *RenderingContext, center: PointF, radius: f32, thickness: i32, color: *const ColorRGBA) !void {
     const renderer = sdl_ctx.*.renderer;
+
+    // Create a texture of outer_radius x outer_radius
+    const f_thickness = @as(f32, @floatFromInt(thickness));
+    const outer_radius = radius + f_thickness / 2;
+    const inner_radius = radius - f_thickness / 2;
+    const tx_size: i32 = @intFromFloat(@ceil(outer_radius * 2));
+    const p_center: PointF = .{ .x = outer_radius, .y = outer_radius };
+
+    const tx = c.SDL_CreateTexture(renderer, c.SDL_PIXELFORMAT_RGBA8888, c.SDL_TEXTUREACCESS_TARGET, tx_size, tx_size);
+    defer c.SDL_DestroyTexture(tx);
+
+    try sdlTry(c.SDL_SetRenderTarget(renderer, tx));
     try sdlTry(c.SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a));
 
-    var prev_x = center.x + radius * math.cos(0.0);
-    var prev_y = center.y + radius * math.sin(0.0);
+    // Draw the outer circle
+    const y_outer_end = p_center.y + outer_radius;
+    var y = p_center.y - outer_radius;
 
-    for (0..150) |i| {
-        const angle = (@as(f32, @floatFromInt(i)) + 1) * (2 * math.pi / @as(f32, @floatFromInt(150)));
-        const x = center.x + radius * math.cos(angle);
-        const y = center.y + radius * math.sin(angle);
+    while(y < y_outer_end) : (y += 1.0) {
+        const dy = if (y > p_center.y) y - p_center.y else p_center.y - y;
+        const dx = math.sqrt(outer_radius * outer_radius - dy * dy);
 
-        try drawLine(sdl_ctx, .{ .x = x, .y = y }, .{ .x = prev_x, .y = prev_y }, thickness, color);
+        const x_start = p_center.x - dx;
+        const x_end = p_center.x + dx;
 
-        prev_x = x;
-        prev_y = y;
+        try sdlTry(c.SDL_RenderLine(renderer, x_start, y, x_end, y));
     }
+
+     // Alpha the inner circle
+     try sdlTry(c.SDL_SetRenderDrawBlendMode(renderer, c.SDL_BLENDMODE_NONE));
+     try sdlTry(c.SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0));
+
+     const y_inner_end = p_center.y + inner_radius;
+     y = p_center.y - inner_radius;
+
+     while(y < y_inner_end) : (y += 1.0) {
+        const dy = if (y > p_center.y) y - p_center.y else p_center.y - y;
+        const dx = math.sqrt(inner_radius * inner_radius - dy * dy);
+
+        const x_start = p_center.x - dx;
+        const x_end = p_center.x + dx;
+
+        try sdlTry(c.SDL_RenderLine(renderer, x_start, y, x_end, y));
+    }
+
+    // Reset the renderer
+    try sdlTry(c.SDL_SetRenderDrawBlendMode(renderer, c.SDL_BLENDMODE_BLEND));
+    try sdlTry(c.SDL_SetRenderTarget(renderer, null));
+
+    // Render the texture to the screen
+    const dstrect: c.SDL_FRect = .{ .x = center.x - outer_radius, .y = center.y - outer_radius, .h = outer_radius * 2, .w = outer_radius * 2 };
+    try sdlTry(c.SDL_RenderTexture(renderer, tx, null, &dstrect));
 }
 
+/// List video drivers (for debugging purposes)
 fn listVideoDrivers() void {
     c.SDL_Log("Available video drivers:");
     var i: c_int = c.SDL_GetNumVideoDrivers();
@@ -215,15 +253,18 @@ fn listVideoDrivers() void {
     }
 }
 
+/// Prints the last SDL error and returns a generic SDLError
 fn sdlTry(result: bool) !void {
     if (result) return;
     return printSDLErrorAndFail(error.SDLError);
 }
 
+/// Prints the last SDL error
 fn printSDLError() void {
     c.SDL_Log("SDL error: %s", c.SDL_GetError());
 }
 
+/// Prints the last SDL error and returns the specified error
 fn printSDLErrorAndFail(err: anyerror) !void {
     printSDLError();
     return err;
