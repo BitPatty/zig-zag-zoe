@@ -219,7 +219,6 @@ pub fn drawCircle(sdl_ctx: *RenderingContext, center: PointF, radius: f32, thick
     }
 
      // Alpha the inner circle
-     try sdlTry(c.SDL_SetRenderDrawBlendMode(renderer, c.SDL_BLENDMODE_NONE));
      try sdlTry(c.SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0));
 
      const y_inner_end = p_center.y + inner_radius;
@@ -236,7 +235,6 @@ pub fn drawCircle(sdl_ctx: *RenderingContext, center: PointF, radius: f32, thick
     }
 
     // Reset the renderer
-    try sdlTry(c.SDL_SetRenderDrawBlendMode(renderer, c.SDL_BLENDMODE_BLEND));
     try sdlTry(c.SDL_SetRenderTarget(renderer, null));
 
     // Render the texture to the screen
